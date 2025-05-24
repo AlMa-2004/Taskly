@@ -9,11 +9,10 @@ class User(db.Model, UserMixin):
     surname = db.Column(db.String(100))
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(255))
-    google_id = db.Column(db.String(255), unique=True)
+    google_id = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    members = db.relationship("Member", back_populates="user")
-
+    members = db.relationship('Member', back_populates='user', cascade='all, delete-orphan') # with backref, the relationship is defined both ways
 
 # Flask-login requires a User model with the following properties:
 

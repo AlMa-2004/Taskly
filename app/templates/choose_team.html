@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Where to now? Taskly</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem auto;
+      max-width: 500px;
+    }
+    label, input {
+      display: block;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    input[type="submit"] {
+      margin-top: 1.5rem;
+      padding: 0.5rem;
+      background: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+    <h2>Welcome to Taskly!</h2>
+    <p>You're not part of any team yet. What would you like to do?</p>
+
+    <a href="{{ url_for('teams.create_team_form') }}">
+    <button>Create a New Team</button>
+    </a>
+
+    <hr>
+
+    <form method="POST" action="{{ url_for('teams.process_join') }}">
+    <label for="invite_code">Have an invite code?</label>
+    <input type="text" name="invite_code" id="invite_code" required placeholder="e.g. ABC123XY">
+    <button type="submit">Join Team</button>
+    </form>
+
+</body>
+</html>
