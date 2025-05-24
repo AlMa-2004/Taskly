@@ -12,4 +12,3 @@ Taskly is a task management web app for distributed teams, built with Flask, MyS
 - Task assignment, due dates, and statuses
 - Full MVC architecture using Flask
 - Secure session management with Flask-Login
-- CSRF-protected forms with Flask-WTF
