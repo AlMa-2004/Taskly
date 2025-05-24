@@ -4,6 +4,8 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 import os
+import firebase_admin
+from firebase_admin import credentials
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -33,10 +35,15 @@ def create_app():
     app.register_blueprint(task_bp)
     app.register_blueprint(dashboard_bp)
 
+    cred_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 'firebase/firebase-adminsdk.json')
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
+
     from app.models.users import User
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return User.query.get(int(user_id)) # for flask-login; retreives the current user from the session
 
     return app

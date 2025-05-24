@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Taskly - Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* In case style.css is missing */
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Taskly</h1>
+    <p>Please sign in with Google to continue</p>
+    <hr>
+  </header>
+
+  <main>
+    <button onclick="loginWithGoogle()">Sign in with Google</button>
+  </main>
+
+  <!-- Firebase SDK (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLDt0eG8Nj_lxTmZKrX-tJBu317veqEWE",
+      authDomain: "taskly-auth.firebaseapp.com",
+      projectId: "taskly-auth",
+      storageBucket: "taskly-auth.firebasestorage.app",
+      messagingSenderId: "908289562167",
+      appId: "1:908289562167:web:92f411e1d4bb8f069dd1b2",
+      measurementId: "G-XBD9XBDMSS"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    async function loginWithGoogle() {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await firebase.auth().signInWithPopup(provider);
+        const idToken = await result.user.getIdToken();
+
+        const res = await fetch("/auth/login/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ idToken })
+        });
+
+        if (res.ok) {
+          window.location.href = "/dashboard";
+        } else {
+          const err = await res.json();
+          console.error("Login failed:", err.message);
+          alert("Login failed: " + err.message);
+        }
+      } catch (err) {
+        console.error("Firebase login error:", err);
+        alert("Google login failed.");
+      }
+    }
+  </script>
+</body>
+</html>
