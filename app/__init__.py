@@ -23,4 +23,13 @@ def create_app():
     # ! IMPORTANT (uncomment when merged with main branch)
     from app.models import users, teams, roles, members, tasks
 
+    from app.controllers.auth_controller import auth_bp
+    from app.controllers.team_controller import team_bp
+    from app.controllers.task_controller import task_bp
+    from app.controllers.dashboard_controller import dashboard_bp
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(team_bp)
+    app.register_blueprint(task_bp)
+    app.register_blueprint(dashboard_bp)
     return app
