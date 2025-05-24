@@ -8,7 +8,7 @@ dashboard_bp = Blueprint('dashboard', __name__)
 def dashboard():
     tasks = []
     if not current_user.members or len(current_user.members) == 0:
-        return redirect(url_for('teams.choose_team_form'))
+        return redirect(url_for('teams.choose_team_option'))
 
     for m in current_user.members:
         tasks.extend(m.tasks)

@@ -12,4 +12,4 @@ class Role(db.Model):
     can_unassign_task = db.Column(db.Boolean)
     can_pick_up = db.Column(db.Boolean)
 
-    members = db.relationship("Member", back_populates="role")
+    members = db.relationship('Member', backref='role')

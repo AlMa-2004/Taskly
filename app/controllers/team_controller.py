@@ -37,3 +37,24 @@ def create_team():
     db.session.commit()
 
     return redirect(url_for('dashboard.dashboard'))
+
+@team_bp.route('/join', methods=['POST'])
+@login_required
+def process_join():
+    invite_code = request.form.get('invite_code')
+    
+    if not invite_code:
+        return "Invite code is required.", 400
+
+    team = Team.query.filter_by(invite_code=invite_code).first()
+    if not team:
+        return "Invalid invite code.", 404
+
+    from app.models.roles import Role
+    role = Role.query.filter_by(name='Member').first()
+
+    member = Member(user_id=current_user.id, team_id=team.id, role_id=role.id)
+    db.session.add(member)
+    db.session.commit()
+
+    return redirect(url_for('dashboard.dashboard'))

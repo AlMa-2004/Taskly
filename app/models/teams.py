@@ -1,4 +1,5 @@
 from app import db
+from secrets import token_urlsafe
 
 class Team(db.Model):
     __tablename__ = 'teams'
@@ -6,9 +7,9 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    invite_code = db.Column(db.String(20), unique=True, default=lambda: token_urlsafe(8))
 
-    members = db.relationship("Member", back_populates="team")
-    tasks = db.relationship("Task", back_populates="team")
+    members = db.relationship('Member', back_populates='team', cascade='all, delete-orphan')
 
     # Needed for a custom join! Since tasks are only attached to its members
     tasks = db.relationship(
