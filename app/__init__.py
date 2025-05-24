@@ -21,6 +21,6 @@ def create_app():
     login_manager.init_app(app)
 
     # ! IMPORTANT (uncomment when merged with main branch)
-    # from app.models import users, teams, roles, members, tasks
+    from app.models import users, teams, roles, members, tasks
 
     return app
