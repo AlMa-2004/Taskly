@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Welcome, {{ user.name }}</h2>
+
+  {% if tasks %}
+    <h3>Your Tasks:</h3>
+    <ul>
+      {% for task in tasks %}
+        <li>
+          {{ task.description }} (Status: {{ task.status }})
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no tasks yet.</p>
+  {% endif %}
+{% endblock %}
