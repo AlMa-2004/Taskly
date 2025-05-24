@@ -1,8 +1,8 @@
 """Initial schema
 
-Revision ID: bb3b3e6f5f7d
+Revision ID: f52fe8755cbb
 Revises: 
-Create Date: 2025-05-24 14:26:16.179574
+Create Date: 2025-05-24 15:03:16.571678
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bb3b3e6f5f7d'
+revision = 'f52fe8755cbb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -60,15 +60,13 @@ def upgrade():
     )
     op.create_table('tasks',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('team_id', sa.Integer(), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('member_id', sa.Integer(), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('due_date', sa.DateTime(), nullable=True),
     sa.Column('status', sa.Enum('not allocated', 'in progress', 'done', 'overdue'), nullable=True),
     sa.Column('last_status_update', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['member_id'], ['members.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
