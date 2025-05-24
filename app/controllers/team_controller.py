@@ -1,29 +1,39 @@
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from app.models.teams import Team
 from app.models.members import Member
+from app.models.roles import Role
 from app import db
 
 team_bp = Blueprint('teams', __name__, url_prefix='/teams')
 
+@team_bp.route('/create', methods=['GET'])
+@login_required
+def create_team_form():
+    return render_template('create_team.html')
+
+@team_bp.route('/choose', methods=['GET'])
+@login_required
+def choose_team_option():
+    return render_template('choose_team.html')
+
 @team_bp.route('/create', methods=['POST'])
 @login_required
 def create_team():
-    name = request.json.get('name')
+    name = request.form.get('name')
+    if not name:
+        return "Team name is required", 400
+
     team = Team(name=name)
     db.session.add(team)
     db.session.commit()
 
-    member = Member(user_id=current_user.id, team_id=team.id)
+    admin_role = Role.query.filter_by(name='Admin').first()
+    if not admin_role:
+        return "Admin role not found. OOPS!", 500
+
+    member = Member(user_id=current_user.id, team_id=team.id, role_id=admin_role.id)
     db.session.add(member)
     db.session.commit()
 
-    return jsonify({'status': 'created', 'team_id': team.id})
-
-
-@team_bp.route('/<int:team_id>', methods=['GET'])
-@login_required
-def view_team(team_id):
-    team = Team.query.get_or_404(team_id)
-    members = team.members
-    return render_template('team.html', team=team, members=members)
+    return redirect(url_for('dashboard.dashboard'))
