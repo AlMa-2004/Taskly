@@ -32,4 +32,11 @@ def create_app():
     app.register_blueprint(team_bp)
     app.register_blueprint(task_bp)
     app.register_blueprint(dashboard_bp)
+
+    from app.models.users import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
     return app
