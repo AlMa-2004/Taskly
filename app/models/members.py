@@ -12,3 +12,6 @@ class Member(db.Model):
     team = db.relationship("Team", back_populates="members")
     user = db.relationship("User", back_populates="members")
     role = db.relationship("Role", back_populates="members")
+
+    # redundancy for ORM
+    tasks = db.relationship("Task", back_populates="member")
