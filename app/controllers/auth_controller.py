@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify, redirect, url_for
 from firebase_admin import auth as firebase_auth
 from flask_login import login_user, logout_user
 from app.models.users import User
@@ -30,7 +30,8 @@ def google_login():
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    return jsonify({'status': 'logged out'})
+    #return jsonify({'status': 'logged out'})
+    return redirect(url_for('auth.login_page'))
 
 @auth_bp.route('/login', methods=['GET'])
 def login_page():

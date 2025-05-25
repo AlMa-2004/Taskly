@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify, redirect, url_for
 from flask_login import login_required
 from app.models.tasks import Task
 from app import db
@@ -8,15 +8,24 @@ task_bp = Blueprint('tasks', __name__, url_prefix='/tasks')
 @task_bp.route('/create', methods=['POST'])
 @login_required
 def create_task():
-    data = request.json
+    description = request.form.get("description")
+    member_id = request.form.get("member_id")
+    due_date = request.form.get("due_date")
+    team_id = request.form.get("team_id")
+
+    if not description or not team_id:
+        return "Missing fields", 400
+
     task = Task(
-        member_id=data.get('member_id'),
-        description=data.get('description'),
-        due_date=data.get('due_date')
+        description=description,
+        member_id=member_id if member_id else None,
+        due_date=due_date if due_date else None,
     )
+
     db.session.add(task)
     db.session.commit()
-    return jsonify({'status': 'task created', 'task_id': task.id})
+    return redirect(url_for('dashboard.admin_dashboard'))
+
 
 @task_bp.route('/<int:task_id>', methods=['GET'])
 @login_required

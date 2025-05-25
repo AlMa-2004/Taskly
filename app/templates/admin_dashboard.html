@@ -1,0 +1,97 @@
+<!-- templates/admin_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Team Management - Taskly</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <h1>Team: {{ team.name }}</h1>
+    <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
+    <button type="submit">🚪 Logout</button>
+    </form>
+
+  <details>
+    <summary>🔐 Invitation Code</summary>
+    <p><code>{{ team.invite_code }}</code></p>
+  </details>
+
+  <hr>
+  <h2>👥 Team Members</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Joined At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in team.members %}
+        <tr>
+          <td>{{ member.user.name }} {{ member.user.surname }}</td>
+          <td>{{ member.user.email }}</td>
+          <td>{{ member.role.name }}</td>
+          <td>{{ member.joined_at.strftime('%Y-%m-%d') }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+  <h2>📝 Assign New Task</h2>
+  <form method="POST" action="{{ url_for('tasks.create_task') }}">
+    <input type="hidden" name="team_id" value="{{ team.id }}">
+    <label>Description:<br>
+      <textarea name="description" required></textarea>
+    </label><br>
+
+    <label>Assign to:<br>
+      <select name="member_id">
+        {% for member in team.members %}
+          <option value="{{ member.id }}">{{ member.user.name }} {{ member.user.surname }}</option>
+        {% endfor %}
+      </select>
+    </label><br>
+
+    <label>Due date:<br>
+      <input type="date" name="due_date">
+    </label><br>
+
+    <button type="submit">Create Task</button>
+  </form>
+
+  <hr>
+  <h2>📋 Tasks You Assigned</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        <th>Due</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in assigned_tasks %}
+        <tr>
+          <td>{{ task.description }}</td>
+          <td>
+            {% if task.member %}
+              {{ task.member.user.name }} {{ task.member.user.surname }}
+            {% else %}
+              <em>Unassigned</em>
+            {% endif %}
+          </td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}</td>
+          <td>{{ task.last_status_update.strftime('%Y-%m-%d') }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
