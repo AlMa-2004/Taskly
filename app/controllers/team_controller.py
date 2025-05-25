@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models.teams import Team
 from app.models.members import Member
 from app.models.roles import Role
+from app.models.users import User
 from app import db
 
 team_bp = Blueprint('teams', __name__, url_prefix='/teams')
@@ -34,6 +35,27 @@ def create_team():
 
     member = Member(user_id=current_user.id, team_id=team.id, role_id=admin_role.id)
     db.session.add(member)
+    db.session.commit()
+
+    unassigned_user = User.query.filter_by(email='unassigned@system.local').first()
+    if not unassigned_user:
+        unassigned_user = User(
+            name='Unassigned',
+            surname='',
+            email='unassigned@system.local',
+            password='', 
+            google_id='unassigned'
+        )
+        db.session.add(unassigned_user)
+        db.session.commit()
+
+    unassigned_role = Role.query.filter_by(name='Viewer').first()  #lowest permissions
+    unassigned_member = Member(
+        user_id=unassigned_user.id,
+        team_id=team.id,
+        role_id=unassigned_role.id
+    )
+    db.session.add(unassigned_member)
     db.session.commit()
 
     return redirect(url_for('dashboard.dashboard'))

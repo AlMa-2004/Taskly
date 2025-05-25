@@ -21,7 +21,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-
+    
     # ! IMPORTANT (uncomment when merged with main branch)
     from app.models import users, teams, roles, members, tasks
 
@@ -29,11 +29,15 @@ def create_app():
     from app.controllers.team_controller import team_bp
     from app.controllers.task_controller import task_bp
     from app.controllers.dashboard_controller import dashboard_bp
+    from app.controllers.api_controller import api_bp
+    from app.controllers.main_controller import main_bp
 
+    app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(team_bp)
     app.register_blueprint(task_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(main_bp)
 
     cred_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 'firebase/firebase-adminsdk.json')
     if not firebase_admin._apps:
@@ -46,4 +50,7 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id)) # for flask-login; retreives the current user from the session
 
+    from app.scheduler import init_scheduler
+    init_scheduler(app)
+    
     return app

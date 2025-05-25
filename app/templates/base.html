@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Taskly</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
   <header>
@@ -12,9 +11,29 @@
   </header>
 
   <main>
+    <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
+  ⚠️ New task updates detected. <a href="">Click to refresh</a>
+    </div>
+
     {% block content %}{% endblock %}
   </main>
 
-  
+    <script>
+    setInterval(async () => {
+      try {
+        console.log("Checking for overdue tasks...");
+
+        const res = await fetch('/api/check-updates');
+        const data = await res.json();
+
+        if (data.updated) {
+          document.getElementById('refresh-banner').style.display = 'block';
+        }
+      } catch (e) {
+        console.error("Update check failed:", e);
+      }
+    }, 60000);
+  </script>
+
 </body>
 </html>
