@@ -1,56 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
-  ⚠️ New task updates detected. <a href="">Click to refresh</a>
-  </div>
-
+<div class="d-flex justify-content-between align-items-center mb-4">
   <h2>Welcome, {{ user.name }}</h2>
-  <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
-    <button type="submit">🚪 Logout</button>
+  <form action="{{ url_for('auth.logout') }}" method="GET">
+    <button type="submit" class="btn btn-outline-danger">🚪 Logout</button>
   </form>
+</div>
 
-  {% if tasks %}
-    <h3>Your Tasks</h3>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for task in tasks %}
+{% if tasks %}
+  <div class="card shadow-sm p-4 mb-4">
+    <h3 class="mb-3">🗂️ Your Tasks</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle styled-table">
+        <thead class="table-light">
           <tr>
-            <td>{{ task.description }}</td>
-            <td>{{ task.status }}</td>
-            <td>{{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '—' }}</td>
-            <td>
-              {% if task.member and task.member.user.id == user.id %}
-                <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id) }}">
-                  <select name="status">
-                    <option value="in progress" {% if task.status == 'in progress' %}selected{% endif %}>In Progress</option>
-                    <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
-                    <option value="overdue" {% if task.status == 'overdue' %}selected{% endif %}>Overdue</option>
-                  </select>
-                  <button type="submit">Update</button>
-                </form>
-              {% elif task.member and task.member.user.name == 'Unassigned' %}
-                <form method="POST" action="{{ url_for('tasks.pick_up_task') }}">
-                  <input type="hidden" name="task_id" value="{{ task.id }}">
-                  <button type="submit">Pick Up</button>
-                </form>
-              {% else %}
-                <em>Not your task</em>
-              {% endif %}
-            </td>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Action</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>You have no tasks yet.</p>
-  {% endif %}
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+            <tr>
+              <td>{{ task.description }}</td>
+              <td>{{ task.status }}</td>
+              <td>{{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '—' }}</td>
+              <td>
+                {% if task.member and task.member.user.id == user.id %}
+                  <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id) }}" class="d-flex gap-2 align-items-center">
+                    <select name="status" class="form-select form-select-sm">
+                      <option value="in progress" {% if task.status == 'in progress' %}selected{% endif %}>In Progress</option>
+                      <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+                      <option value="overdue" {% if task.status == 'overdue' %}selected{% endif %}>Overdue</option>
+                    </select>
+                    <button type="submit" class="btn btn-success btn-sm">Update</button>
+                  </form>
+                {% elif task.member and task.member.user.name == 'Unassigned' %}
+                  <form method="POST" action="{{ url_for('tasks.pick_up_task') }}">
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <button type="submit" class="btn btn-primary btn-sm">Pick Up</button>
+                  </form>
+                {% else %}
+                  <em>Not your task</em>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">📭 You have no tasks yet.</div>
+{% endif %}
 {% endblock %}
