@@ -12,6 +12,10 @@
   </header>
 
   <main>
+    <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
+  ⚠️ New task updates detected. <a href="">Click to refresh</a>
+    </div>
+
     {% block content %}{% endblock %}
   </main>
 
@@ -29,7 +33,7 @@
       } catch (e) {
         console.error("Update check failed:", e);
       }
-    }, 60000); // 5 minutes
+    }, 60000);
   </script>
 
 </body>

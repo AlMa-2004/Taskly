@@ -76,13 +76,11 @@ def pick_up_task():
     if not member:
         return "You are not a member of this team.", 403
 
-    # ✅ Assign the task and update the status
     task.member_id = member.id
-    task.status = 'in progress'  # ✅ explicitly update status
+    task.status = 'in progress'
     db.session.commit()
 
     return redirect(url_for('dashboard.dashboard'))
-
 
 @task_bp.route('/<int:task_id>/update-status', methods=['POST'])
 @login_required
@@ -90,14 +88,47 @@ def update_status(task_id):
     new_status = request.form.get('status')
     task = Task.query.get_or_404(task_id)
 
-    # Ensure the user is a member of the team and owns the task
+    # Check user owns the task
     member_ids = [m.id for m in current_user.members]
     if task.member_id not in member_ids:
         return "Unauthorized", 403
 
-    if new_status not in ['in progress', 'done', 'overdue']:
+    # Only allow valid status changes
+    if new_status not in ['in progress', 'done']:
         return "Invalid status", 400
+
+    # If task is overdue, only allow changing it to 'done'
+    if task.status == 'overdue' and new_status != 'done':
+        return "You cannot revert an overdue task to 'in progress'.", 403
+
+    # Never allow manually setting status to 'overdue'
+    if new_status == 'overdue':
+        return "Overdue status is system-assigned only.", 403
 
     task.status = new_status
     db.session.commit()
     return redirect(url_for('dashboard.dashboard'))
+
+
+@task_bp.route('/<int:task_id>/delete', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    task = Task.query.get_or_404(task_id)
+
+    if not task.member:
+        return "This task is not assigned to a valid member.", 400
+
+    task_team_id = task.member.team_id
+
+    is_admin = any(
+        m.team_id == task_team_id and m.role.name == 'Admin'
+        for m in current_user.members
+    )
+
+    if not is_admin:
+        return "Unauthorized", 403
+
+    db.session.delete(task)
+    db.session.commit()
+    return redirect(url_for('dashboard.admin_dashboard'))
+

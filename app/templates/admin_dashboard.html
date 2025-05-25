@@ -122,6 +122,12 @@
           </td>
           <td>{{ task.status }}</td>
           <td>{{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '—' }}</td>
+          <td>
+                <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?');">
+                <button type="submit">🗑️ Delete</button>
+                </form>
+            </td>
+
         </tr>
       {% endfor %}
     </tbody>
@@ -142,7 +148,7 @@
         }
     }, 60000);
     });
-</script>
+    </script>
 
 
 </body>
