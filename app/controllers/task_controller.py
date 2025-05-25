@@ -1,6 +1,8 @@
-from flask import Blueprint, request, render_template, jsonify, redirect, url_for
-from flask_login import login_required
+from flask import Blueprint, request, render_template, redirect, url_for
+from flask_login import login_required, current_user
 from app.models.tasks import Task
+from app.models.members import Member
+from app.models.users import User
 from app import db
 
 task_bp = Blueprint('tasks', __name__, url_prefix='/tasks')
@@ -16,14 +18,27 @@ def create_task():
     if not description or not team_id:
         return "Missing fields", 400
 
+    unassigned_user = User.query.filter_by(email='unassigned@system.local').first()
+    if not unassigned_user:
+        return "Unassigned user missing", 500
+    
+    unassigned_member = Member.query.filter_by(
+        user_id=unassigned_user.id,
+        team_id=team_id
+    ).first()
+
+    if not unassigned_member:
+        return "Unassigned member not found for this team", 500
     task = Task(
         description=description,
         member_id=member_id if member_id else None,
         due_date=due_date if due_date else None,
+        status = 'not allocated' if str(member_id) == str(unassigned_member.id) else 'in progress'
     )
 
     db.session.add(task)
     db.session.commit()
+
     return redirect(url_for('dashboard.admin_dashboard'))
 
 
@@ -32,3 +47,44 @@ def create_task():
 def view_task(task_id):
     task = Task.query.get_or_404(task_id)
     return render_template('task_detail.html', task=task)
+
+@task_bp.route('/pick-up', methods=['POST'])
+@login_required
+def pick_up_task():
+    task_id = request.form.get('task_id')
+    task = Task.query.get(task_id)
+
+    if not task or not task.member or task.member.user.name != 'Unassigned':
+        return "Task not available for pickup.", 403
+
+    team_id = task.member.team_id
+    member = Member.query.filter_by(user_id=current_user.id, team_id=team_id).first()
+
+    if not member:
+        return "You are not a member of this team.", 403
+
+    # ✅ Assign the task and update the status
+    task.member_id = member.id
+    task.status = 'in progress'  # ✅ explicitly update status
+    db.session.commit()
+
+    return redirect(url_for('dashboard.dashboard'))
+
+
+@task_bp.route('/<int:task_id>/update-status', methods=['POST'])
+@login_required
+def update_status(task_id):
+    new_status = request.form.get('status')
+    task = Task.query.get_or_404(task_id)
+
+    # Ensure the user is a member of the team and owns the task
+    member_ids = [m.id for m in current_user.members]
+    if task.member_id not in member_ids:
+        return "Unauthorized", 403
+
+    if new_status not in ['in progress', 'done', 'overdue']:
+        return "Invalid status", 400
+
+    task.status = new_status
+    db.session.commit()
+    return redirect(url_for('dashboard.dashboard'))

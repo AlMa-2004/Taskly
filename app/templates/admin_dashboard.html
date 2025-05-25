@@ -8,9 +8,9 @@
 </head>
 <body>
   <h1>Team: {{ team.name }}</h1>
-    <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
+  <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
     <button type="submit">🚪 Logout</button>
-    </form>
+  </form>
 
   <details>
     <summary>🔐 Invitation Code</summary>
@@ -50,6 +50,7 @@
 
     <label>Assign to:<br>
       <select name="member_id">
+        <option value="{{ unassigned_member.id }}">-- Unassigned --</option>
         {% for member in team.members %}
           <option value="{{ member.id }}">{{ member.user.name }} {{ member.user.surname }}</option>
         {% endfor %}
@@ -64,19 +65,48 @@
   </form>
 
   <hr>
-  <h2>📋 Tasks You Assigned</h2>
+  <h3>📥 Your Tasks</h3>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in own_tasks %}
+        <tr>
+          <td>{{ task.description }}</td>
+          <td>{{ task.status }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id) }}">
+              <select name="status">
+                <option value="in progress" {% if task.status == 'in progress' %}selected{% endif %}>In Progress</option>
+                <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+                <option value="overdue" {% if task.status == 'overdue' %}selected{% endif %}>Overdue</option>
+              </select>
+              <button type="submit">Update</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+  <h3>📊 Tasks Assigned to Members</h3>
   <table border="1">
     <thead>
       <tr>
         <th>Description</th>
         <th>Assigned To</th>
         <th>Status</th>
-        <th>Due</th>
-        <th>Last Updated</th>
+        <th>Due Date</th>
       </tr>
     </thead>
     <tbody>
-      {% for task in assigned_tasks %}
+      {% for task in all_tasks %}
         <tr>
           <td>{{ task.description }}</td>
           <td>
@@ -87,8 +117,7 @@
             {% endif %}
           </td>
           <td>{{ task.status }}</td>
-          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}</td>
-          <td>{{ task.last_status_update.strftime('%Y-%m-%d') }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '—' }}</td>
         </tr>
       {% endfor %}
     </tbody>
