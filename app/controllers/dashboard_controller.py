@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, abort
+from flask import Blueprint, render_template, redirect, url_for, abort, jsonify
 from flask_login import login_required, current_user
-from app.models.roles import Role
 from app.models.members import Member
 from app.models.users import User
 from app.models.tasks import Task

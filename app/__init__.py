@@ -29,7 +29,9 @@ def create_app():
     from app.controllers.team_controller import team_bp
     from app.controllers.task_controller import task_bp
     from app.controllers.dashboard_controller import dashboard_bp
+    from app.controllers.api_controller import api_bp
 
+    app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(team_bp)
     app.register_blueprint(task_bp)

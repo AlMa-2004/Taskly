@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
+  ⚠️ New task updates detected. <a href="">Click to refresh</a>
+    </div>
+
   <h1>Team: {{ team.name }}</h1>
   <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
     <button type="submit">🚪 Logout</button>
@@ -57,8 +61,8 @@
       </select>
     </label><br>
 
-    <label>Due date:<br>
-      <input type="date" name="due_date">
+    <label>Due date and time:<br>
+    <input type="datetime-local" name="due_date">
     </label><br>
 
     <button type="submit">Create Task</button>
@@ -117,10 +121,29 @@
             {% endif %}
           </td>
           <td>{{ task.status }}</td>
-          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '—' }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '—' }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    setInterval(async () => {
+        try {
+        console.log("Checking for overdue tasks...");
+        const res = await fetch('/api/check-updates');
+        const data = await res.json();
+
+        if (data.updated) {
+            document.getElementById('refresh-banner').style.display = 'block';
+        }
+        } catch (e) {
+        console.error("Update check failed:", e);
+        }
+    }, 60000);
+    });
+</script>
+
+
 </body>
 </html>

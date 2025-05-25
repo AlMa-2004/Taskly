@@ -1,9 +1,11 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from flask_login import login_required, current_user
+from datetime import datetime
 from app.models.tasks import Task
 from app.models.members import Member
 from app.models.users import User
 from app import db
+
 
 task_bp = Blueprint('tasks', __name__, url_prefix='/tasks')
 
@@ -26,6 +28,17 @@ def create_task():
         user_id=unassigned_user.id,
         team_id=team_id
     ).first()
+
+    due_date_raw = request.form.get("due_date")
+    due_date = datetime.strptime(due_date_raw, "%Y-%m-%dT%H:%M")
+    if due_date.time().hour == 0 and due_date.time().minute == 0:
+        due_date = due_date.replace(hour=23, minute=59)
+
+    if due_date_raw:
+        try:
+            due_date = datetime.strptime(due_date_raw, "%Y-%m-%dT%H:%M")
+        except ValueError:
+            return "Invalid date format", 400
 
     if not unassigned_member:
         return "Unassigned member not found for this team", 500

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
+  ⚠️ New task updates detected. <a href="">Click to refresh</a>
+  </div>
+
   <h2>Welcome, {{ user.name }}</h2>
   <form action="{{ url_for('auth.logout') }}" method="GET" style="text-align: right;">
     <button type="submit">🚪 Logout</button>
@@ -22,7 +26,7 @@
           <tr>
             <td>{{ task.description }}</td>
             <td>{{ task.status }}</td>
-            <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '—' }}</td>
+            <td>{{ { task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '—' }}</td>
             <td>
               {% if task.member and task.member.user.id == user.id %}
                 <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id) }}">
