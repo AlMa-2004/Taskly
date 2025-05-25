@@ -12,29 +12,20 @@ with app.app_context():
         roles = [
             Role(
                 name='Admin',
-                can_delete_team=True,
-                can_edit_task=True,
                 can_delete_task=True,
                 can_assign_task=True,
-                can_unassign_task=True,
                 can_pick_up=True
             ),
             Role(
                 name='Member',
-                can_delete_team=False,
-                can_edit_task=True,
                 can_delete_task=False,
                 can_assign_task=False,
-                can_unassign_task=False,
                 can_pick_up=True
             ),
             Role(
                 name='Viewer',
-                can_delete_team=False,
-                can_edit_task=False,
                 can_delete_task=False,
                 can_assign_task=False,
-                can_unassign_task=False,
                 can_pick_up=False
             ),
         ]
