@@ -1,0 +1,93 @@
+/* Base styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: #fff;
+  padding: 20px;
+  margin: 0;
+}
+
+h1, h2, h3 {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Button styles */
+.btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn.delete {
+  background: linear-gradient(135deg, #e3342f, #cc1f1a);
+}
+
+.btn.delete:hover {
+  box-shadow: 0 10px 20px rgba(227, 52, 47, 0.6);
+}
+
+/* Refresh banner */
+.refresh-banner {
+  display: none;
+  background: #fff3cd;
+  padding: 1em;
+  border: 1px solid #ffeeba;
+  margin-bottom: 1em;
+  color: #856404;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* Enhanced table styling */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 1em;
+  background-color: #ffffff;
+  color: #333333;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table thead tr {
+  background-color: #4e73df;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.styled-table th, .styled-table td {
+  padding: 12px 20px;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #4e73df;
+}
+
+.styled-table tbody tr:hover {
+  background-color: #f0f8ff;
+  color: #000;
+}

@@ -3,37 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Taskly</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/taskly.css">
 </head>
-<body>
-  <header>
-    <h1>Taskly</h1>
-    <hr>
+<body class="bg-light">
+  <header class="bg-primary text-white py-3 mb-4 shadow">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h1 class="h3 mb-0">Taskly</h1>
+      <small>Distributed Team Task Management</small>
+    </div>
   </header>
 
-  <main>
-    <div id="refresh-banner" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
-  ⚠️ New task updates detected. <a href="">Click to refresh</a>
+  <main class="container mb-5">
+    <div id="refresh-banner" class="alert alert-warning d-none" role="alert">
+      ⚠️ New task updates detected. <a href="" class="alert-link">Click to refresh</a>
     </div>
 
     {% block content %}{% endblock %}
   </main>
 
-    <script>
+  <footer class="bg-dark text-light text-center py-3 mt-auto">
+    <div class="container">
+      <small>&copy;2025 Taskly</small>
+    </div>
+  </footer>
+
+  <script>
     setInterval(async () => {
       try {
-        console.log("Checking for overdue tasks...");
-
         const res = await fetch('/api/check-updates');
         const data = await res.json();
-
         if (data.updated) {
-          document.getElementById('refresh-banner').style.display = 'block';
+          document.getElementById('refresh-banner').classList.remove('d-none');
         }
       } catch (e) {
         console.error("Update check failed:", e);
       }
     }, 60000);
   </script>
-
 </body>
 </html>
