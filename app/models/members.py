@@ -12,4 +12,4 @@ class Member(db.Model):
     team = db.relationship("Team", back_populates="members")
     user = db.relationship("User", back_populates="members")
 
-    tasks = db.relationship("Task", back_populates="member", cascade="all, delete-orphan") # relationships need to be defined both ways 
+    tasks = db.relationship("Task", back_populates="member", cascade="all, delete-orphan") 

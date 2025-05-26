@@ -16,7 +16,7 @@
 
   <main class="container mb-5">
     <div id="refresh-banner" class="alert alert-warning d-none" role="alert">
-      ⚠️ New task updates detected. <a href="" class="alert-link">Click to refresh</a>
+  ⚠️ New task updates detected. <a href="" class="alert-link">Click to refresh</a>
     </div>
 
     {% block content %}{% endblock %}
@@ -27,19 +27,48 @@
       <small>&copy;2025 Taskly</small>
     </div>
   </footer>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const banner = document.getElementById('refresh-banner');
+  const refreshLink = banner?.querySelector('a');
 
-  <script>
-    setInterval(async () => {
-      try {
-        const res = await fetch('/api/check-updates');
-        const data = await res.json();
-        if (data.updated) {
-          document.getElementById('refresh-banner').classList.remove('d-none');
+  // User clicks the refresh link = they acknowledge the update
+  refreshLink?.addEventListener("click", () => {
+    const latest = localStorage.getItem("latestOverdueUpdate");
+    if (latest) {
+      localStorage.setItem("lastSeenOverdueUpdate", latest);
+    }
+  });
+
+  setInterval(async () => {
+    try {
+      const res = await fetch('/api/check-updates');
+      const data = await res.json();
+
+      console.log("Check result:", data);
+
+      if (data.updated && data.latest_update) {
+        localStorage.setItem("latestOverdueUpdate", data.latest_update);
+
+        const seen = localStorage.getItem("lastSeenOverdueUpdate");
+        const latest = data.latest_update;
+
+        if (latest !== seen) {
+          banner.classList.remove('d-none');
+          console.log("✅ Banner shown for new overdue task");
+        } else {
+          console.log("✅ Overdue known, already seen");
         }
-      } catch (e) {
-        console.error("Update check failed:", e);
+      } else {
+        console.log("✅ No overdue tasks found");
       }
-    }, 60000);
-  </script>
+    } catch (e) {
+      console.error("❌ Update check failed:", e);
+    }
+  }, 30000);
+});
+</script>
+
+
 </body>
 </html>

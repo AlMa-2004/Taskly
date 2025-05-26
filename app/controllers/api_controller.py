@@ -9,5 +9,9 @@ api_bp = Blueprint('api', __name__, url_prefix='/api')
 
 @api_bp.route('/check-updates')
 def check_updates():
-    overdue_tasks = Task.query.filter(Task.status == 'overdue').count()
-    return jsonify({'updated': overdue_tasks > 0})
+    overdue_tasks = Task.query.filter(Task.status == 'overdue').order_by(Task.last_status_update.desc()).all()
+    latest_update = overdue_tasks[0].last_status_update.isoformat() if overdue_tasks else None
+    return jsonify({
+        'updated': bool(overdue_tasks),
+        'latest_update': latest_update
+    })
