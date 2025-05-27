@@ -46,13 +46,13 @@ def create_app():
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(main_bp)
 
-    # initialize Firebase Admin SDK using private service account key
+    # initialize Firebase Admin SDK using private key
     cred_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 'firebase/firebase-adminsdk.json')
     if not firebase_admin._apps:
         cred = credentials.Certificate(cred_path)
         firebase_admin.initialize_app(cred)
 
-    # user loader for flask login => tells Flask how to get a user id => it is NECCESARY to have it defined
+    # user loader for flask login => tells flask how to get a user id ! it is NECCESARY to have it defined
     from app.models.users import User
     @login_manager.user_loader
     def load_user(user_id):
