@@ -9,4 +9,4 @@ class Role(db.Model):
     can_assign_task = db.Column(db.Boolean)
     can_pick_up = db.Column(db.Boolean)
 
-    members = db.relationship('Member', backref='role')
+    members = db.relationship('Member', backref='role') # backref => no need for extra config on the member side

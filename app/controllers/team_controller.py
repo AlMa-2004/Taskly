@@ -37,6 +37,7 @@ def create_team():
     db.session.add(member)
     db.session.commit()
 
+    # creates the dummy user (unassigned tasks) upon team creation
     unassigned_user = User.query.filter_by(email='unassigned@system.local').first()
     if not unassigned_user:
         unassigned_user = User(
@@ -73,7 +74,7 @@ def process_join():
         return "Invalid invite code.", 404
 
     from app.models.roles import Role
-    role = Role.query.filter_by(name='Member').first()
+    role = Role.query.filter_by(name='Member').first() # gets role id from Roles table
 
     member = Member(user_id=current_user.id, team_id=team.id, role_id=role.id)
     db.session.add(member)

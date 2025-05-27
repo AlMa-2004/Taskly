@@ -47,7 +47,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
   <script>
-    const firebaseConfig = {
+    const firebaseConfig = { // the apiKey identifies my current app with regards to firebase and loads its SPECIFIC configurations
       apiKey: "AIzaSyCLDt0eG8Nj_lxTmZKrX-tJBu317veqEWE",
       authDomain: "taskly-auth.firebaseapp.com",
       projectId: "taskly-auth",
@@ -61,10 +61,10 @@
     async function loginWithGoogle() {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        const result = await firebase.auth().signInWithPopup(provider);
-        const idToken = await result.user.getIdToken();
+        const result = await firebase.auth().signInWithPopup(provider); //shows the popup
+        const idToken = await result.user.getIdToken(); //gets token (a JWT) from the popup upon logging in
 
-        const res = await fetch("/auth/login/google", {
+        const res = await fetch("/auth/login/google", { //sends token to backend for it to be processed
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -72,7 +72,7 @@
           body: JSON.stringify({ idToken })
         });
 
-        if (res.ok) {
+        if (res.ok) { // if logging was successful
           window.location.href = "/dashboard";
         } else {
           const err = await res.json();

@@ -1,5 +1,6 @@
 from app import db
-from flask_login import UserMixin
+from flask_login import UserMixin # helper class: adds session-related methods (is_authenticated, get_id) to the User model for flask login to work properly
+from app.utils.timezone import now_ro
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -10,7 +11,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(255))
     google_id = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(db.DateTime, default=now_ro)
 
     members = db.relationship('Member', back_populates='user', cascade='all, delete-orphan') # with backref, the relationship is defined both ways
 

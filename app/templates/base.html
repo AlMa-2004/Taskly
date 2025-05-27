@@ -27,46 +27,56 @@
       <small>&copy;2025 Taskly</small>
     </div>
   </footer>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const banner = document.getElementById('refresh-banner');
-  const refreshLink = banner?.querySelector('a');
 
-  // User clicks the refresh link = they acknowledge the update
-  refreshLink?.addEventListener("click", () => {
-    const latest = localStorage.getItem("latestOverdueUpdate");
-    if (latest) {
-      localStorage.setItem("lastSeenOverdueUpdate", latest);
-    }
-  });
+  <script>
+  //wait until the entire page has loaded (parsed and ready for user interaction)
+  document.addEventListener("DOMContentLoaded", () => {
+    const banner = document.getElementById('refresh-banner');
+    const refreshLink = banner?.querySelector('a');
 
-  setInterval(async () => {
-    try {
-      const res = await fetch('/api/check-updates');
-      const data = await res.json();
-
-      console.log("Check result:", data);
-
-      if (data.updated && data.latest_update) {
-        localStorage.setItem("latestOverdueUpdate", data.latest_update);
-
-        const seen = localStorage.getItem("lastSeenOverdueUpdate");
-        const latest = data.latest_update;
-
-        if (latest !== seen) {
-          banner.classList.remove('d-none');
-          console.log("✅ Banner shown for new overdue task");
-        } else {
-          console.log("✅ Overdue known, already seen");
-        }
-      } else {
-        console.log("✅ No overdue tasks found");
+    //when user clicks the refresh link from the div (idenfied earlier by the link node)
+    refreshLink?.addEventListener("click", () => {
+      const latest = localStorage.getItem("latestOverdueUpdate"); //get the most recent update timestamp => uses localstorage from browser
+      if (latest) {
+        // save it as "seen" so the banner won't show again until something newer appears
+        localStorage.setItem("lastSeenOverdueUpdate", latest);
       }
-    } catch (e) {
-      console.error("❌ Update check failed:", e);
-    }
-  }, 30000);
-});
+    });
+
+    setInterval(async () => {
+      try {
+        // Call the Flask API route to get latest overdue task update info
+        const res = await fetch('/api/check-updates');
+        const data = await res.json(); // Parse JSON response from the server
+
+        console.log("Check result:", data); // Debugging info in browser console
+
+        // if there are overdue tasks and a latest timestamp was returned
+        if (data.updated && data.latest_update) {
+          // store the latest update timestamp
+          localStorage.setItem("latestOverdueUpdate", data.latest_update);
+
+          //compare with what the user has already seen
+          const seen = localStorage.getItem("lastSeenOverdueUpdate");
+          const latest = data.latest_update;
+
+          // if it's a new update the user hasn't seen yet=>show the banner
+          if (latest !== seen) {
+            banner.classList.remove('d-none'); //the banner is initially hidden
+            console.log(">>>! Banner shown for new overdue task");
+          } else {
+            console.log(">>> Overdue known, already seen");
+          }
+
+        } else {
+          console.log(">>> No overdue tasks found");
+        }
+
+      } catch (e) {
+        console.error(">>>! Update check failed:", e);
+      }
+    }, 30000); //check updates every 30 secs
+  });
 </script>
 
 
