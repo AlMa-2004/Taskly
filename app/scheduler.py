@@ -28,7 +28,7 @@ def check_and_clean_tasks():
 
     if tasks or old_tasks:
         db.session.commit()
-        print(f"[{now}] ✅ Updated {len(tasks)} tasks, deleted {len(old_tasks)}.")
+        print(f"[{now}] --------> Updated {len(tasks)} tasks, deleted {len(old_tasks)}.")
 
 def init_scheduler(app):
     scheduler = BackgroundScheduler()
