@@ -38,7 +38,12 @@ def dashboard():
 @dashboard_bp.route('/dashboard/admin')
 @login_required
 def admin_dashboard():
-    admin_member = next((m for m in current_user.members if m.role.name == 'Admin'), None)
+    admin_member = None
+    for m in current_user.members:
+        if m.role.name == 'Admin':
+            admin_member = m
+            break
+
     if not admin_member:
         return abort(403)
 
