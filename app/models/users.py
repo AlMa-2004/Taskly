@@ -1,3 +1,4 @@
+# users.py
 from app import db
 from flask_login import UserMixin # helper class: adds session-related methods (is_authenticated, get_id) to the User model for flask login to work properly
 from app.utils.timezone import now_ro

@@ -1,3 +1,4 @@
+# members.py
 from app import db
 
 class Member(db.Model):

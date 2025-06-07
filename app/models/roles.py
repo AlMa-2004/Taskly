@@ -1,3 +1,4 @@
+# roles.py
 from app import db
 
 class Role(db.Model):

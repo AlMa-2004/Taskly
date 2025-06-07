@@ -1,3 +1,4 @@
+# auth_controller.py
 from flask import Blueprint, request, render_template, jsonify, redirect, url_for
 from firebase_admin import auth as firebase_auth
 from flask_login import login_user, logout_user

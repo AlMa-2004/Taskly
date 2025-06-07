@@ -1,3 +1,4 @@
+# dashboard_controller.py
 from flask import Blueprint, render_template, redirect, url_for, abort
 from flask_login import login_required, current_user
 from app.models.members import Member
